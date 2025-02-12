@@ -140,11 +140,15 @@ void SimpleBootstrapExample() {
 
     // Perform the bootstrapping operation. The goal is to increase the number of levels remaining
     // for HE computation.
+    auto start_time = std::chrono::system_clock::now();
     auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);
-
+    auto end_time = std::chrono::system_clock::now();
+    long long duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
     std::cout << "Number of levels remaining after bootstrapping: "
               << depth - ciphertextAfter->GetLevel() - (ciphertextAfter->GetNoiseScaleDeg() - 1) << std::endl
               << std::endl;
+
+    std::cout << "latency of the bootstrapping operation: " << duration << " microseconds" << std::endl;
 
     Plaintext result;
     cryptoContext->Decrypt(keyPair.secretKey, ciphertextAfter, &result);

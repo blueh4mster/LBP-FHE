@@ -10,7 +10,7 @@ No. of slots: 2048
 
 bits of precision: 18
 
-![ckks-full-packing](../../images/img1.png)
+![ckks-full-packing](../../images/simple-ckks.png)
 
 ### CKKS with sparse Packing
 
