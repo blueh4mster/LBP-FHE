@@ -20,7 +20,7 @@ No. of slots: 8
 
 bits of precision: 26
 
-![ckks-sparse-packing](../../images/img2.png)
+![ckks-sparse-packing](../../images/adv-ckks.png)
 
 ### CKKS with 2 iterations
 
