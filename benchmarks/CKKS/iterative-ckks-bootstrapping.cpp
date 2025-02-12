@@ -158,7 +158,10 @@ void IterativeBootstrapExample() {
     Ciphertext<DCRTPoly> ciph = cryptoContext->Encrypt(keyPair.publicKey, ptxt);
 
     // Step 5: Measure the precision of a single bootstrapping operation.
+    auto s1 = std::chrono::system_clock::now();
     auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);
+    auto e1 = std::chrono::system_clock::now();
+    long long d1 = std::chrono::duration_cast<std::chrono::microseconds>(e1 - s1).count();
 
     Plaintext result;
     cryptoContext->Decrypt(keyPair.secretKey, ciphertextAfter, &result);
@@ -172,7 +175,11 @@ void IterativeBootstrapExample() {
     std::cout << "Precision input to algorithm: " << precision << std::endl;
 
     // Step 6: Run bootstrapping with multiple iterations.
+    auto s2 = std::chrono::system_clock::now();
     auto ciphertextTwoIterations = cryptoContext->EvalBootstrap(ciph, numIterations, precision);
+    auto e2 = std::chrono::system_clock::now();
+    long long d2 = std::chrono::duration_cast<std::chrono::microseconds>(e2 - s2).count();
+    long long duration = d1 + d2;
 
     Plaintext resultTwoIterations;
     cryptoContext->Decrypt(keyPair.secretKey, ciphertextTwoIterations, &resultTwoIterations);
@@ -187,4 +194,5 @@ void IterativeBootstrapExample() {
     std::cout << "Number of levels remaining after 2 bootstrappings: "
               << depth - ciphertextTwoIterations->GetLevel() - (ciphertextTwoIterations->GetNoiseScaleDeg() - 1)
               << std::endl;
+    std::cout << "combined latency : " << duration << " microseconds" << std::endl;
 }

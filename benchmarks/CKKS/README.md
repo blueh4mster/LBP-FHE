@@ -32,6 +32,6 @@ precision after 1st iteration: 22
 
 precision after 2nd iteration: 37
 
-![ckks-with-2-iterations](../../images/img3.png)
+![ckks-with-2-iterations](../../images/iter-ckks.png)
 
 
