@@ -72,6 +72,8 @@ int main() {
     // Sample Program: Step 4: evalute f(x) homomorphically and decrypt
     // Note that we check for all the possible plaintexts.
     for (int i = 0; i < p; i++) {
+        auto start_time = std::chrono::high_resolution_clock::now();
+
         auto ct1 = cc.Encrypt(sk, i % p, LARGE_DIM, p);
 
         auto ct_cube = cc.EvalFunc(ct1, lut);
@@ -80,7 +82,10 @@ int main() {
 
         cc.Decrypt(sk, ct_cube, &result, p);
 
-        std::cout << "Input: " << i << ". Expected: " << fp(i, p) << ". Evaluated = " << result << std::endl;
+        auto end_time = std::chrono::high_resolution_clock::now();
+
+        long long duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+        std::cout << "Input: " << i << ". Expected: " << fp(i, p) << ". Evaluated = " << result << ". latency = " << duration <<  std::endl;
     }
 
     return 0;
