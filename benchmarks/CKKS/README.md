@@ -22,6 +22,18 @@ bits of precision: 26
 
 ![ckks-sparse-packing](../../images/adv-ckks.png)
 
+No. of slots: 16
+
+bits of precision: 24
+
+![ckks-sparse-packing-2](../../images/adv-ckks-16.png)
+
+No. of slots: 32
+
+bits of precision: 24
+
+![ckks-sparse-packing-3](../../images/adv-ckks-32.png)
+
 ### CKKS with 2 iterations
 
 We ran the benchmarks for CKKS (Cheon-Kim-Kim-Song) bootstrapping algorithm (2 iterations) given in the openFHE library for c++ using the source file `iterative-ckks-bootstrapping.cpp`. Sparse packing has been used for running the iterations.
