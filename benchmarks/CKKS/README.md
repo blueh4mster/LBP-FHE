@@ -4,23 +4,23 @@
 
 ### CKKS with Full Packing
 
-We ran the benchmarks for CKKS (Cheon-Kim-Kim-Song) bootstrapping algorithm (with full packing) given in the openFHE library for c++ using the source file `simple-ckks-bootstrapping.cpp`.
+We ran the benchmarks for CKKS (Cheon-Kim-Kim-Song) bootstrapping algorithm (with full packing) by writing a benchmarking file at `openfhe-development/benchmark/src/ckks-full-packing.cpp`.
 
 No. of slots: 2048
 
 bits of precision: 18
 
-![ckks-full-packing](../../images/simple-ckks.png)
+![ckks-full-packing](../../images/ckks-benchmark-full-packing.png)
 
-### CKKS with sparse Packing
+### CKKS with Sparse Packing
 
-We ran the benchmarks for CKKS (Cheon-Kim-Kim-Song) bootstrapping algorithm (with sparse packing) given in the openFHE library for c++ using the source file `advanced-ckks-bootstrapping.cpp`.
+We ran the benchmarks for CKKS (Cheon-Kim-Kim-Song) bootstrapping algorithm (with sparse packing) by writing a benchmarking file at `openfhe-development/benchmark/src/ckks-sparse-packing.cpp`.
 
 No. of slots: 8
 
 bits of precision: 26
 
-![ckks-sparse-packing](../../images/adv-ckks.png)
+![ckks-sparse-packing](../../images/ckks-benchmark-sparse-packing.png)
 
 No. of slots: 16
 
