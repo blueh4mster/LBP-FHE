@@ -10,16 +10,23 @@ No. of slots: 1
 
 bits of precision: 1
 
-![cggi-1-bit](../../images/cggi-benchmarks-1.png)
+![cggi-1-bit](../../images/cggi-benchmark-single-bit.png)
 
 ### CGGI multi-bit
 
-We ran the benchmarks for CGGI (Chillotti-Gama-Georgieva-Izabachene) bootstrapping algorithm (multi-bit) given in the openFHE library for c++ using the source file `eval-function.cpp`.
+We ran the benchmarks for CGGI (Chillotti-Gama-Georgieva-Izabachene) bootstrapping algorithm (multi-bit) by writing a benchmarking file at `openfhe-development/benchmark/src/cggi-eval-func.cpp`.
 
 No. of slots: 1
 
 bits of precision: 3
 
-It generate keys and then evaluates x^3%p (p=8 in image below)
+It generates keys and then evaluates x^3%p (p=8 in image below)
 
-![cggi-multi-bit](../../images/cggi-benchmarks-2.png)
+![cggi-multi-bit](../../images/cggi-benchmark-multi-bit.png)
+
+NOTE: The benchmarks were run after modifying the `openfhe-development/third-party/google-benchmark/src/console_reporter.cc` file for obtaining throughput and latency metrics.
+
+Throughput = slots/cpu_time
+
+Latency = real_time-cpu_time
+
