@@ -46,4 +46,9 @@ precision after 2nd iteration: 37
 
 ![ckks-with-2-iterations](../../images/iter-ckks.png)
 
+NOTE: The benchmarks were run after modifying the `openfhe-development/third-party/google-benchmark/src/console_reporter.cc` file for obtaining throughput and latency metrics.
+Please copy paste the file provided in this directory at mentioned location.
 
+Throughput = slots/cpu_time
+
+Latency = real_time-cpu_time

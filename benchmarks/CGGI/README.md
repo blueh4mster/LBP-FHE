@@ -25,6 +25,7 @@ It generates keys and then evaluates x^3%p (p=8 in image below)
 ![cggi-multi-bit](../../images/cggi-benchmark-multi-bit.png)
 
 NOTE: The benchmarks were run after modifying the `openfhe-development/third-party/google-benchmark/src/console_reporter.cc` file for obtaining throughput and latency metrics.
+Please copy paste the file provided in this directory at mentioned location.
 
 Throughput = slots/cpu_time
 
