@@ -400,6 +400,12 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
   int cnt = 0;
   size_t rss_after = 0;
 
+  // Check if context supports bootstrapping
+  if (!meta.data->context.isBootstrappable()) {
+    state.SkipWithError("Context is not bootstrappable");
+    return;
+  }
+
   helib::Ptxt<helib::BGV> ptxt(meta.data->context);
   ptxt.random();
   helib::Ctxt ctxt(meta.data->publicKey);
@@ -421,7 +427,7 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
     auto copy(ctxt);
     state.ResumeTiming();
 
-    meta.data->ea.bootstrap(copy);
+    meta.data->publicKey.thinReCrypt(copy);
 
     rss_after = benchutils::get_rss_kb();
   }
@@ -432,7 +438,42 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
   state.counters["Power_W"] = avg_power;
 }
 
+/*
+ * BGV Parameter Definitions:
+ * 
+ * m:     Cyclotomic polynomial index (determines ring dimension = phi(m))
+ *        - Higher m = larger ring dimension = more security but slower operations
+ *        - Must be odd and coprime to p
+ * 
+ * p:     Plaintext modulus (the field over which plaintexts are defined)
+ *        - p=2 for binary arithmetic (most common)
+ *        - p=257, p=65537 for larger plaintext spaces
+ * 
+ * r:     Hensel lifting parameter (precision for encoding)
+ *        - r=1 for most applications
+ *        - Higher r = more precision but larger ciphertexts
+ * 
+ * qbits: Number of bits for the ciphertext modulus q
+ *        - Higher qbits = more noise budget = more operations before bootstrapping
+ *        - Must be large enough for security and noise management
+ * 
+ * gens:  Generators for the multiplicative group (for rotations)
+ *        - Empty {} uses default generators
+ *        - Specified generators enable specific rotation patterns
+ * 
+ * ords:  Orders of the generators (determines rotation capabilities)
+ *        - Empty {} uses default orders
+ *        - Must match the generators if specified
+ * 
+ * mvec:  Factorization of m for bootstrapping support
+ *        - Empty {} = no bootstrapping support
+ *        - Non-empty = enables bootstrapping with specified factorization
+ *        - Required for thinReCrypt() and reCrypt() operations
+ */
+
 Meta fn;
+
+// Non-bootstrappable parameter sets (for basic operations)
 Params tiny_params(/*m=*/257, /*p=*/2, /*r=*/1, /*qbits=*/360);
 HE_BENCH_CAPTURE(key_generation, tiny_params, fn);
 HE_BENCH_CAPTURE(adding_two_ciphertexts, tiny_params, fn);
@@ -444,7 +485,6 @@ HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, tiny_params, fn);
 HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, tiny_params, fn);
 HE_BENCH_CAPTURE(encrypting_ciphertexts, tiny_params, fn);
 HE_BENCH_CAPTURE(decrypting_ciphertexts, tiny_params, fn);
-HE_BENCH_CAPTURE(bootstrapping_ciphertext, tiny_params, fn);
 
 Params small_params(/*m=*/8009, /*p=*/2, /*r=*/1, /*qbits=*/380);
 HE_BENCH_CAPTURE(key_generation, small_params, fn);
@@ -457,7 +497,19 @@ HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, small_params, fn);
 HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, small_params, fn);
 HE_BENCH_CAPTURE(encrypting_ciphertexts, small_params, fn);
 HE_BENCH_CAPTURE(decrypting_ciphertexts, small_params, fn);
-HE_BENCH_CAPTURE(bootstrapping_ciphertext, small_params, fn);
+
+// Bootstrappable parameter sets (for bootstrapping operations)
+Params tiny_bootstrap_params(/*m=*/257, /*p=*/2, /*r=*/1, /*qbits=*/360, 
+                            /*gens=*/std::vector<long>{}, 
+                            /*ords=*/std::vector<long>{}, 
+                            /*mvec=*/std::vector<long>{257});
+HE_BENCH_CAPTURE(bootstrapping_ciphertext, tiny_bootstrap_params, fn);
+
+Params small_bootstrap_params(/*m=*/8009, /*p=*/2, /*r=*/1, /*qbits=*/380,
+                              /*gens=*/std::vector<long>{}, 
+                              /*ords=*/std::vector<long>{}, 
+                              /*mvec=*/std::vector<long>{8009});
+HE_BENCH_CAPTURE(bootstrapping_ciphertext, small_bootstrap_params, fn);
 
 // Params big_params(/*m=*/32003, /*p=*/2, /*r=*/1, /*qbits=*/5800);
 // HE_BENCH_CAPTURE(adding_two_ciphertexts, big_params, fn);
