@@ -148,4 +148,111 @@ void FHEW_EVAL_FUNC(benchmark::State &state, ParamSet param_set)
 BENCHMARK_CAPTURE(FHEW_EVAL_FUNC, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
 BENCHMARK_CAPTURE(FHEW_EVAL_FUNC, STD128, STD128)->Unit(benchmark::kMicrosecond);
 
+// --- Additional basic ops: KeyGen, Decrypt, Bootstrapping (GINX/CGGI) ---
+
+template <class ParamSet>
+void FHEW_KEYGEN_ONLY(benchmark::State &state, ParamSet param_set)
+{
+    BINFHE_PARAMSET param(param_set);
+    BinFHEContext cc = GenerateFHEWContext(param);
+
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+
+    for (auto _ : state)
+    {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
+        LWEPrivateKey sk = cc.KeyGen();
+        (void)sk;
+
+        rss_after = benchutils::get_rss_kb();
+    }
+
+    double avg_power = (power_sum) / cnt;
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
+}
+
+BENCHMARK_CAPTURE(FHEW_KEYGEN_ONLY, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
+BENCHMARK_CAPTURE(FHEW_KEYGEN_ONLY, STD128, STD128)->Unit(benchmark::kMicrosecond);
+
+template <class ParamSet>
+void FHEW_DECRYPT_ONLY(benchmark::State &state, ParamSet param_set)
+{
+    BINFHE_PARAMSET param(param_set);
+    BinFHEContext cc = GenerateFHEWContext(param);
+
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+
+    LWEPrivateKey sk = cc.KeyGen();
+    // Encrypt a sample under a small dimension to match gate-style measurements
+    LWECiphertext ct = cc.Encrypt(sk, 1, SMALL_DIM);
+
+    for (auto _ : state)
+    {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
+        LWEPlaintext result;
+        cc.Decrypt(sk, ct, &result);
+
+        rss_after = benchutils::get_rss_kb();
+    }
+
+    double avg_power = (power_sum) / cnt;
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
+}
+
+BENCHMARK_CAPTURE(FHEW_DECRYPT_ONLY, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
+BENCHMARK_CAPTURE(FHEW_DECRYPT_ONLY, STD128, STD128)->Unit(benchmark::kMicrosecond);
+
+template <class ParamSet>
+void FHEW_BOOTSTRAP_ONLY(benchmark::State &state, ParamSet param_set)
+{
+    BINFHE_PARAMSET param(param_set);
+    BinFHEContext cc = GenerateFHEWContext(param);
+
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+
+    LWEPrivateKey sk = cc.KeyGen();
+    cc.BTKeyGen(sk);
+    LWECiphertext ct = cc.Encrypt(sk, 1);
+
+    for (auto _ : state)
+    {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
+        // Use NOT to trigger PBS without extra operand cost
+        auto refreshed = cc.EvalNOT(ct);
+        (void)refreshed;
+
+        rss_after = benchutils::get_rss_kb();
+    }
+
+    double avg_power = (power_sum) / cnt;
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
+}
+
+BENCHMARK_CAPTURE(FHEW_BOOTSTRAP_ONLY, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
+BENCHMARK_CAPTURE(FHEW_BOOTSTRAP_ONLY, STD128, STD128)->Unit(benchmark::kMicrosecond);
+
 BENCHMARK_MAIN();
