@@ -16,8 +16,8 @@ git clone https://github.com/google/benchmark.git -b v1.5.6
 cd benchmark
 mkdir build
 cd build
-cmake -DBENCHMARK_ENABLE_GTEST_TESTS=OFF -DBENCHMARK_ENABLE_INSTALL=ON -DCMAKE_INSTALL_PREFIX=<installation dir> ..
-make
+cmake -DBENCHMARK_ENABLE_GTEST_TESTS=OFF -DBENCHMARK_ENABLE_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/home/gerceboss/helib_install ..
+make -j4
 make install
 ```
 
@@ -33,8 +33,8 @@ the project.
 cd HElib/benchmarks
 mkdir build
 cd build
-cmake -Dhelib_DIR=<helib installation dir>/share/cmake/helib -Dbenchmark_DIR=<benchmark installation dir>/lib/cmake/benchmark/ ..
-make
+cmake -Dhelib_DIR=/home/gerceboss/helib_install/share/cmake/helib -Dbenchmark_DIR=/home/gerceboss/helib_install/lib/cmake/benchmark/ ..
+make -j4
 ```
 
 When writing benchmarks please use `BENCHMARK_CAPTURE(<custom params>)` for
