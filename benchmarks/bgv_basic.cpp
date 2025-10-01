@@ -365,8 +365,76 @@ static void decrypting_ciphertexts(benchmark::State& state, Meta& meta)
   state.counters["Power_W"] = avg_power;
 }
 
+static void key_generation(benchmark::State& state, Meta& meta)
+{
+  double power_sum = 0.0;
+  int cnt = 0;
+  size_t rss_after = 0;
+
+  for (auto _ : state) {
+    long freq = benchutils::get_cpu_freq();
+    double volt = benchutils::get_cpu_volt();
+    double power = benchutils::estimate_power(volt, freq, 1.0);
+
+    power_sum+= power;
+    cnt+=1;
+
+    state.PauseTiming();
+    helib::SecKey secretKey(meta.data->context);
+    secretKey.GenSecKey();
+    helib::PubKey publicKey(secretKey);
+    state.ResumeTiming();
+
+    rss_after = benchutils::get_rss_kb();
+  }
+  
+  double avg_power = (power_sum) / cnt;
+
+  state.counters["RSS_kB"] = rss_after;
+  state.counters["Power_W"] = avg_power;
+}
+
+static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
+{
+  double power_sum = 0.0;
+  int cnt = 0;
+  size_t rss_after = 0;
+
+  helib::Ptxt<helib::BGV> ptxt(meta.data->context);
+  ptxt.random();
+  helib::Ctxt ctxt(meta.data->publicKey);
+  meta.data->publicKey.Encrypt(ctxt, ptxt);
+
+  // Perform some operations to consume noise budget
+  ctxt.square();
+  ctxt.square();
+
+  for (auto _ : state) {
+    long freq = benchutils::get_cpu_freq();
+    double volt = benchutils::get_cpu_volt();
+    double power = benchutils::estimate_power(volt, freq, 1.0);
+
+    power_sum+= power;
+    cnt+=1;
+
+    state.PauseTiming();
+    auto copy(ctxt);
+    state.ResumeTiming();
+
+    meta.data->ea.bootstrap(copy);
+
+    rss_after = benchutils::get_rss_kb();
+  }
+  
+  double avg_power = (power_sum) / cnt;
+
+  state.counters["RSS_kB"] = rss_after;
+  state.counters["Power_W"] = avg_power;
+}
+
 Meta fn;
 Params tiny_params(/*m=*/257, /*p=*/2, /*r=*/1, /*qbits=*/360);
+HE_BENCH_CAPTURE(key_generation, tiny_params, fn);
 HE_BENCH_CAPTURE(adding_two_ciphertexts, tiny_params, fn);
 HE_BENCH_CAPTURE(subtracting_two_ciphertexts, tiny_params, fn);
 HE_BENCH_CAPTURE(negating_a_ciphertext, tiny_params, fn);
@@ -376,8 +444,10 @@ HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, tiny_params, fn);
 HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, tiny_params, fn);
 HE_BENCH_CAPTURE(encrypting_ciphertexts, tiny_params, fn);
 HE_BENCH_CAPTURE(decrypting_ciphertexts, tiny_params, fn);
+HE_BENCH_CAPTURE(bootstrapping_ciphertext, tiny_params, fn);
 
 Params small_params(/*m=*/8009, /*p=*/2, /*r=*/1, /*qbits=*/380);
+HE_BENCH_CAPTURE(key_generation, small_params, fn);
 HE_BENCH_CAPTURE(adding_two_ciphertexts, small_params, fn);
 HE_BENCH_CAPTURE(subtracting_two_ciphertexts, small_params, fn);
 HE_BENCH_CAPTURE(negating_a_ciphertext, small_params, fn);
@@ -387,6 +457,7 @@ HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, small_params, fn);
 HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, small_params, fn);
 HE_BENCH_CAPTURE(encrypting_ciphertexts, small_params, fn);
 HE_BENCH_CAPTURE(decrypting_ciphertexts, small_params, fn);
+HE_BENCH_CAPTURE(bootstrapping_ciphertext, small_params, fn);
 
 // Params big_params(/*m=*/32003, /*p=*/2, /*r=*/1, /*qbits=*/5800);
 // HE_BENCH_CAPTURE(adding_two_ciphertexts, big_params, fn);
