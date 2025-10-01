@@ -35,6 +35,7 @@
 
 #include "benchmark/benchmark.h"
 #include "binfhecontext.h"
+#include "benchmark_utils.h"
 
 using namespace lbcrypto;
 
@@ -54,13 +55,30 @@ BinFHEContext GenerateFHEWContext(BINFHE_PARAMSET set) {
 
 template <class ParamSet>
 void FHEW_BTKEYGEN(benchmark::State& state, ParamSet param_set) {
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+
     BINFHE_PARAMSET param(param_set);
     BinFHEContext cc = GenerateFHEWContext(param);
 
     for (auto _ : state) {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
         LWEPrivateKey sk = cc.KeyGen();
         cc.BTKeyGen(sk);
+
+        rss_after = benchutils::get_rss_kb();
     }
+    
+    double avg_power = (power_sum) / cnt;
+
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
 }
 
 BENCHMARK_CAPTURE(FHEW_BTKEYGEN, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
@@ -68,13 +86,30 @@ BENCHMARK_CAPTURE(FHEW_BTKEYGEN, STD128, STD128)->Unit(benchmark::kMicrosecond);
 
 template <class ParamSet>
 void FHEW_ENCRYPT(benchmark::State& state, ParamSet param_set) {
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+    
     BINFHE_PARAMSET param(param_set);
     BinFHEContext cc = GenerateFHEWContext(param);
 
     LWEPrivateKey sk = cc.KeyGen();
     for (auto _ : state) {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
         LWECiphertext ct1 = cc.Encrypt(sk, 1, SMALL_DIM);
+
+        rss_after = benchutils::get_rss_kb();
     }
+    
+    double avg_power = (power_sum) / cnt;
+
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
 }
 
 BENCHMARK_CAPTURE(FHEW_ENCRYPT, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
@@ -82,6 +117,10 @@ BENCHMARK_CAPTURE(FHEW_ENCRYPT, STD128, STD128)->Unit(benchmark::kMicrosecond);
 
 template <class ParamSet>
 void FHEW_NOT(benchmark::State& state, ParamSet param_set) {
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+    
     BINFHE_PARAMSET param(param_set);
     BinFHEContext cc = GenerateFHEWContext(param);
 
@@ -90,8 +129,21 @@ void FHEW_NOT(benchmark::State& state, ParamSet param_set) {
     LWECiphertext ct1 = cc.Encrypt(sk, 1, SMALL_DIM);
 
     for (auto _ : state) {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
         LWECiphertext ct11 = cc.EvalNOT(ct1);
+
+        rss_after = benchutils::get_rss_kb();
     }
+    
+    double avg_power = (power_sum) / cnt;
+
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
 }
 
 BENCHMARK_CAPTURE(FHEW_NOT, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond);
@@ -100,6 +152,10 @@ BENCHMARK_CAPTURE(FHEW_NOT, STD128, STD128)->Unit(benchmark::kMicrosecond);
 // benchmark for binary gates, such as AND, OR, NAND, NOR
 template <class ParamSet, class BinGate>
 void FHEW_BINGATE(benchmark::State& state, ParamSet param_set, BinGate bin_gate) {
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+
     BINGATE gate(bin_gate);
     BINFHE_PARAMSET param(param_set);
 
@@ -113,37 +169,43 @@ void FHEW_BINGATE(benchmark::State& state, ParamSet param_set, BinGate bin_gate)
     LWECiphertext ct2 = cc.Encrypt(sk, 1);
 
     for (auto _ : state) {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
         LWECiphertext ct11 = cc.EvalBinGate(gate, ct1, ct2);
+
+        rss_after = benchutils::get_rss_kb();
     }
+    
+    double avg_power = (power_sum) / cnt;
+
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
 }
 
 BENCHMARK_CAPTURE(FHEW_BINGATE, MEDIUM_OR, MEDIUM, OR)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, MEDIUM_AND, MEDIUM, AND)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, MEDIUM_NOR, MEDIUM, NOR)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, MEDIUM_NAND, MEDIUM, NAND)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, MEDIUM_XOR, MEDIUM, XOR)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, MEDIUM_XNOR, MEDIUM, XNOR)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, STD128_OR, STD128, OR)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, STD128_AND, STD128, AND)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, STD128_NOR, STD128, NOR)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, STD128_NAND, STD128, NAND)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, STD128_XOR, STD128, XOR)->Unit(benchmark::kMicrosecond);
-
 BENCHMARK_CAPTURE(FHEW_BINGATE, STD128_XNOR, STD128, XNOR)->Unit(benchmark::kMicrosecond);
 
 // benchmark for key switching
 template <class ParamSet>
 void FHEW_KEYSWITCH(benchmark::State& state, ParamSet param_set) {
+    double power_sum = 0.0;
+    int cnt = 0;
+    size_t rss_after = 0;
+    
     BINFHE_PARAMSET param(param_set);
     BinFHEContext cc = GenerateFHEWContext(param);
 
@@ -154,8 +216,21 @@ void FHEW_KEYSWITCH(benchmark::State& state, ParamSet param_set) {
     auto keySwitchHint = cc.KeySwitchGen(sk, skN);
 
     for (auto _ : state) {
+        long freq = benchutils::get_cpu_freq();
+        double volt = benchutils::get_cpu_volt();
+        double power = benchutils::estimate_power(volt, freq, 1.0);
+        power_sum+= power;
+        cnt+=1;
+
         LWECiphertext eQ1 = cc.GetLWEScheme()->KeySwitch(cc.GetParams()->GetLWEParams(), keySwitchHint, ctQN1);
+
+        rss_after = benchutils::get_rss_kb();
     }
+    
+    double avg_power = (power_sum) / cnt;
+
+    state.counters["RSS_kB"] = rss_after;
+    state.counters["Power_W"] = avg_power;
 }
 
 BENCHMARK_CAPTURE(FHEW_KEYSWITCH, MEDIUM, MEDIUM)->Unit(benchmark::kMicrosecond)->MinTime(1.0);

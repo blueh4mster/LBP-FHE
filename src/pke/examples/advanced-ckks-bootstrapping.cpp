@@ -38,6 +38,8 @@ Example for CKKS bootstrapping with sparse packing
 #define PROFILE
 
 #include "openfhe.h"
+#include "benchmark_utils.h"
+#include <chrono>
 
 using namespace lbcrypto;
 
@@ -46,7 +48,8 @@ void BootstrapExample(uint32_t numSlots);
 int main(int argc, char* argv[]) {
     // We run the example with 8 slots and ring dimension 4096 to illustrate how to run bootstrapping with a sparse plaintext.
     // Using a sparse plaintext and specifying the smaller number of slots gives a performance improvement (typically up to 3x).
-    BootstrapExample(8);
+    BootstrapExample(16);
+    BootstrapExample(32);
 }
 
 void BootstrapExample(uint32_t numSlots) {
@@ -173,6 +176,7 @@ void BootstrapExample(uint32_t numSlots) {
     // We start with a depleted ciphertext that has used up all of its levels.
     Plaintext ptxt = cryptoContext->MakeCKKSPackedPlaintext(x, 1, depth - 1, nullptr, numSlots);
     ptxt->SetLength(numSlots);
+    std::cout << "Slots: " << numSlots << std::endl;
     std::cout << "Input: " << ptxt << std::endl;
 
     // Encrypt the encoded vectors
@@ -180,12 +184,29 @@ void BootstrapExample(uint32_t numSlots) {
 
     std::cout << "Initial number of levels remaining: " << depth - ciph->GetLevel() << std::endl;
 
+
+
+    // start time
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    long freq = benchutils::get_cpu_freq();
+    double volt = benchutils::get_cpu_volt();
+    double power = benchutils::estimate_power(volt, freq, 1.0);
     // Step 5: Perform the bootstrapping operation. The goal is to increase the number of levels remaining
     // for HE computation.
     auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);
+    // End time
+    auto end = std::chrono::high_resolution_clock::now();
+
+    size_t rss_after = benchutils::get_rss_kb();
 
     std::cout << "Number of levels remaining after bootstrapping: " << depth - ciphertextAfter->GetLevel() << std::endl
               << std::endl;
+
+    auto latency_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout<<"latency of the bootstrapping operation: "<< latency_us <<" microseconds"<< std::endl;
+    std::cout<<"Power consumption of the bootstrapping operation: "<< power <<" W"<< std::endl;
+    std::cout<<"Runtime memory usage of the bootstrapping operation: "<< rss_after<<" kB"<< std::endl;
 
     // Step 7: Decryption and output
     Plaintext result;

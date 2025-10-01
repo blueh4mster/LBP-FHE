@@ -45,7 +45,7 @@ double the precision of a single bootstrapping.
 #define PROFILE
 
 #include "openfhe.h"
-
+#include "benchmark_utils.h"
 using namespace lbcrypto;
 
 void IterativeBootstrapExample();
@@ -156,9 +156,26 @@ void IterativeBootstrapExample() {
 
     // Encrypt the encoded vectors
     Ciphertext<DCRTPoly> ciph = cryptoContext->Encrypt(keyPair.publicKey, ptxt);
+    
+    // start time
+    auto start = std::chrono::high_resolution_clock::now();
+
+    long freq = benchutils::get_cpu_freq();
+    double volt = benchutils::get_cpu_volt();
+    double power = benchutils::estimate_power(volt, freq, 1.0);
 
     // Step 5: Measure the precision of a single bootstrapping operation.
     auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);
+
+    // End time
+    auto end = std::chrono::high_resolution_clock::now();
+
+    size_t rss_after = benchutils::get_rss_kb();
+
+    auto latency_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout<<"latency of the bootstrapping operation for 1 iteration: "<< latency_us <<" microseconds"<< std::endl;
+    std::cout<<"Power consumption of the bootstrapping operation: "<< power <<" W"<< std::endl;
+    std::cout<<"Runtime memory usage of the bootstrapping operation: "<< rss_after<<" kB"<< std::endl;
 
     Plaintext result;
     cryptoContext->Decrypt(keyPair.secretKey, ciphertextAfter, &result);
@@ -171,10 +188,27 @@ void IterativeBootstrapExample() {
     precision = 17;
     std::cout << "Precision input to algorithm: " << precision << std::endl;
 
+
+    // start time
+    start = std::chrono::high_resolution_clock::now();
+    
+    freq = benchutils::get_cpu_freq();
+    volt = benchutils::get_cpu_volt();
+    power = benchutils::estimate_power(volt, freq, 1.0);
     // Step 6: Run bootstrapping with multiple iterations.
     auto ciphertextTwoIterations = cryptoContext->EvalBootstrap(ciph, numIterations, precision);
 
-    Plaintext resultTwoIterations;
+    // end time
+    end = std::chrono::high_resolution_clock::now();
+
+    rss_after = benchutils::get_rss_kb();
+
+    latency_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout<<"latency of the bootstrapping operation for 2 iterations: "<< latency_us <<" microseconds"<< std::endl;
+    std::cout<<"Power consumption of the bootstrapping operation: "<< power <<" W"<< std::endl;
+    std::cout<<"Runtime memory usage of the bootstrapping operation: "<< rss_after<<" kB"<< std::endl;
+
+    Plaintext resultTwoIterations; 
     cryptoContext->Decrypt(keyPair.secretKey, ciphertextTwoIterations, &resultTwoIterations);
     result->SetLength(numSlots);
     auto actualResult = resultTwoIterations->GetCKKSPackedValue();
