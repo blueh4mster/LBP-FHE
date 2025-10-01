@@ -406,14 +406,14 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
     return;
   }
 
-  helib::Ptxt<helib::BGV> ptxt(meta.data->context);
-  ptxt.random();
-  helib::Ctxt ctxt(meta.data->publicKey);
-  meta.data->publicKey.Encrypt(ctxt, ptxt);
-
-  // Perform some operations to consume noise budget
-  ctxt.square();
-  ctxt.square();
+  // Create references to the keys (needed for non-const methods)
+  helib::SecKey& secretKey = const_cast<helib::SecKey&>(meta.data->secretKey);
+  
+  // Generate bootstrapping data for the secret key
+  secretKey.genRecryptData();
+  
+  // Use the secret key's public key (which has the bootstrapping data)
+  helib::PubKey& publicKey = secretKey;
 
   for (auto _ : state) {
     long freq = benchutils::get_cpu_freq();
@@ -423,11 +423,21 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
     power_sum+= power;
     cnt+=1;
 
+    // Create fresh ciphertext for each iteration
+    helib::Ptxt<helib::BGV> ptxt(meta.data->context);
+    ptxt.random();
+    helib::Ctxt ctxt(publicKey);
+    publicKey.Encrypt(ctxt, ptxt);
+
+    // Perform some operations to consume noise budget
+    ctxt.square();
+    ctxt.square();
+
     state.PauseTiming();
     auto copy(ctxt);
     state.ResumeTiming();
 
-    meta.data->publicKey.thinReCrypt(copy);
+    publicKey.thinReCrypt(copy);
 
     rss_after = benchutils::get_rss_kb();
   }
@@ -474,29 +484,29 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
 Meta fn;
 
 // Non-bootstrappable parameter sets (for basic operations)
-Params tiny_params(/*m=*/257, /*p=*/2, /*r=*/1, /*qbits=*/360);
-HE_BENCH_CAPTURE(key_generation, tiny_params, fn);
-HE_BENCH_CAPTURE(adding_two_ciphertexts, tiny_params, fn);
-HE_BENCH_CAPTURE(subtracting_two_ciphertexts, tiny_params, fn);
-HE_BENCH_CAPTURE(negating_a_ciphertext, tiny_params, fn);
-HE_BENCH_CAPTURE(square_a_ciphertext, tiny_params, fn);
-HE_BENCH_CAPTURE(multiplying_two_ciphertexts, tiny_params, fn);
-HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, tiny_params, fn);
-HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, tiny_params, fn);
-HE_BENCH_CAPTURE(encrypting_ciphertexts, tiny_params, fn);
-HE_BENCH_CAPTURE(decrypting_ciphertexts, tiny_params, fn);
+// Params tiny_params(/*m=*/257, /*p=*/2, /*r=*/1, /*qbits=*/360);
+// HE_BENCH_CAPTURE(key_generation, tiny_params, fn);
+// HE_BENCH_CAPTURE(adding_two_ciphertexts, tiny_params, fn);
+// HE_BENCH_CAPTURE(subtracting_two_ciphertexts, tiny_params, fn);
+// HE_BENCH_CAPTURE(negating_a_ciphertext, tiny_params, fn);
+// HE_BENCH_CAPTURE(square_a_ciphertext, tiny_params, fn);
+// HE_BENCH_CAPTURE(multiplying_two_ciphertexts, tiny_params, fn);
+// HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, tiny_params, fn);
+// HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, tiny_params, fn);
+// HE_BENCH_CAPTURE(encrypting_ciphertexts, tiny_params, fn);
+// HE_BENCH_CAPTURE(decrypting_ciphertexts, tiny_params, fn);
 
-Params small_params(/*m=*/8009, /*p=*/2, /*r=*/1, /*qbits=*/380);
-HE_BENCH_CAPTURE(key_generation, small_params, fn);
-HE_BENCH_CAPTURE(adding_two_ciphertexts, small_params, fn);
-HE_BENCH_CAPTURE(subtracting_two_ciphertexts, small_params, fn);
-HE_BENCH_CAPTURE(negating_a_ciphertext, small_params, fn);
-HE_BENCH_CAPTURE(square_a_ciphertext, small_params, fn);
-HE_BENCH_CAPTURE(multiplying_two_ciphertexts, small_params, fn);
-HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, small_params, fn);
-HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, small_params, fn);
-HE_BENCH_CAPTURE(encrypting_ciphertexts, small_params, fn);
-HE_BENCH_CAPTURE(decrypting_ciphertexts, small_params, fn);
+// Params small_params(/*m=*/8009, /*p=*/2, /*r=*/1, /*qbits=*/380);
+// HE_BENCH_CAPTURE(key_generation, small_params, fn);
+// HE_BENCH_CAPTURE(adding_two_ciphertexts, small_params, fn);
+// HE_BENCH_CAPTURE(subtracting_two_ciphertexts, small_params, fn);
+// HE_BENCH_CAPTURE(negating_a_ciphertext, small_params, fn);
+// HE_BENCH_CAPTURE(square_a_ciphertext, small_params, fn);
+// HE_BENCH_CAPTURE(multiplying_two_ciphertexts, small_params, fn);
+// HE_BENCH_CAPTURE(multiplying_two_ciphertexts_no_relin, small_params, fn);
+// HE_BENCH_CAPTURE(rotate_a_ciphertext_by1, small_params, fn);
+// HE_BENCH_CAPTURE(encrypting_ciphertexts, small_params, fn);
+// HE_BENCH_CAPTURE(decrypting_ciphertexts, small_params, fn);
 
 // Bootstrappable parameter sets (for bootstrapping operations)
 Params tiny_bootstrap_params(/*m=*/257, /*p=*/2, /*r=*/1, /*qbits=*/360, 
