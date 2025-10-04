@@ -50,9 +50,7 @@ static void adding_two_ciphertexts(benchmark::State& state, Meta& meta)
   meta.data->publicKey.Encrypt(ctxt2, ptxt2);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -90,9 +88,7 @@ static void subtracting_two_ciphertexts(benchmark::State& state, Meta& meta)
   meta.data->publicKey.Encrypt(ctxt2, ptxt2);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -126,9 +122,7 @@ static void negating_a_ciphertext(benchmark::State& state, Meta& meta)
   meta.data->publicKey.Encrypt(ctxt, ptxt);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -162,9 +156,7 @@ static void square_a_ciphertext(benchmark::State& state, Meta& meta)
   meta.data->publicKey.Encrypt(ctxt, ptxt);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -203,9 +195,7 @@ static void multiplying_two_ciphertexts_no_relin(benchmark::State& state, Meta& 
   meta.data->publicKey.Encrypt(ctxt2, ptxt2);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -244,9 +234,7 @@ static void multiplying_two_ciphertexts(benchmark::State& state, Meta& meta)
   meta.data->publicKey.Encrypt(ctxt2, ptxt2);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -279,9 +267,7 @@ static void rotate_a_ciphertext_by1(benchmark::State& state, Meta& meta)
   meta.data->publicKey.Encrypt(ctxt, ptxt);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -313,9 +299,7 @@ static void encrypting_ciphertexts(benchmark::State& state, Meta& meta)
   helib::Ctxt ctxt(meta.data->publicKey);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -345,9 +329,7 @@ static void decrypting_ciphertexts(benchmark::State& state, Meta& meta)
   helib::Ptxt<helib::BGV> decrypted_result(meta.data->context);
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -372,9 +354,7 @@ static void key_generation(benchmark::State& state, Meta& meta)
   size_t rss_after = 0;
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
@@ -416,9 +396,7 @@ static void bootstrapping_ciphertext(benchmark::State& state, Meta& meta)
   helib::PubKey& publicKey = secretKey;
 
   for (auto _ : state) {
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power =  benchutils::get_total_cpu_energy_j();
 
     power_sum+= power;
     cnt+=1;
