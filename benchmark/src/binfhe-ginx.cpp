@@ -63,9 +63,7 @@ void FHEW_BTKEYGEN(benchmark::State& state, ParamSet param_set) {
     BinFHEContext cc = GenerateFHEWContext(param);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -95,9 +93,7 @@ void FHEW_ENCRYPT(benchmark::State& state, ParamSet param_set) {
 
     LWEPrivateKey sk = cc.KeyGen();
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -129,9 +125,7 @@ void FHEW_NOT(benchmark::State& state, ParamSet param_set) {
     LWECiphertext ct1 = cc.Encrypt(sk, 1, SMALL_DIM);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -169,9 +163,7 @@ void FHEW_BINGATE(benchmark::State& state, ParamSet param_set, BinGate bin_gate)
     LWECiphertext ct2 = cc.Encrypt(sk, 1);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -216,9 +208,7 @@ void FHEW_KEYSWITCH(benchmark::State& state, ParamSet param_set) {
     auto keySwitchHint = cc.KeySwitchGen(sk, skN);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -250,9 +240,7 @@ void FHEW_KEYGEN(benchmark::State& state, ParamSet param_set) {
     BinFHEContext cc = GenerateFHEWContext(param);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -283,9 +271,7 @@ void FHEW_DECRYPT(benchmark::State& state, ParamSet param_set) {
     LWECiphertext ct = cc.Encrypt(sk, 1, SMALL_DIM);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -317,9 +303,7 @@ void FHEW_BOOTSTRAP(benchmark::State& state, ParamSet param_set) {
     LWECiphertext ct = cc.Encrypt(sk, 1);
 
     for (auto _ : state) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 

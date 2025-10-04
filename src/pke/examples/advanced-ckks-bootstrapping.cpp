@@ -189,9 +189,7 @@ void BootstrapExample(uint32_t numSlots) {
     // start time
     auto start = std::chrono::high_resolution_clock::now();
     
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power = benchutils::get_total_cpu_energy_j();
     // Step 5: Perform the bootstrapping operation. The goal is to increase the number of levels remaining
     // for HE computation.
     auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);

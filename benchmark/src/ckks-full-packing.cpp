@@ -36,9 +36,7 @@ void CKKS_FULL_PACKING_BTKEYGEN(benchmark::State &state)
     cc->Enable(ADVANCEDSHE);
     cc->Enable(FHE);
     while (state.KeepRunning()){
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -97,9 +95,7 @@ void CKKS_FULL_PACKING_ENCRYPT(benchmark::State &state)
     ptxt->SetLength(encodedLength);
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
         
@@ -154,9 +150,7 @@ void CKKS_FULL_PACKING_DECRYPT(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -216,9 +210,7 @@ void CKKS_FULL_PACKING_BOOTSTRAP(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -274,9 +266,7 @@ void CKKS_FULL_PACKING_ADD(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -332,9 +322,7 @@ void CKKS_FULL_PACKING_SUB(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -390,9 +378,7 @@ void CKKS_FULL_PACKING_MUL(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -445,9 +431,7 @@ void CKKS_FULL_PACKING_NEG(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -500,9 +484,7 @@ void CKKS_FULL_PACKING_SQR(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 
@@ -556,9 +538,7 @@ void CKKS_FULL_PACKING_ROT_1(benchmark::State &state)
 
     while (state.KeepRunning())
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum += power;
         cnt += 1;
 

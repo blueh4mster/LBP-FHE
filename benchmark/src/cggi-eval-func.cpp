@@ -36,9 +36,7 @@ void FHEW_BTKEYGEN(benchmark::State &state, ParamSet param_set)
 
     for (auto _ : state)
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         // double power = 1.0;
         power_sum+= power;
         cnt+=1;
@@ -72,9 +70,7 @@ void FHEW_ENCRYPT(benchmark::State &state, ParamSet param_set)
     LWEPrivateKey sk = cc.KeyGen();
     for (auto _ : state)
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -126,9 +122,7 @@ void FHEW_EVAL_FUNC(benchmark::State &state, ParamSet param_set)
     for (auto _ : state)
     {
 
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -162,9 +156,7 @@ void FHEW_KEYGEN_ONLY(benchmark::State &state, ParamSet param_set)
 
     for (auto _ : state)
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -198,9 +190,7 @@ void FHEW_DECRYPT_ONLY(benchmark::State &state, ParamSet param_set)
 
     for (auto _ : state)
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -234,9 +224,7 @@ void FHEW_BOOTSTRAP_ONLY(benchmark::State &state, ParamSet param_set)
 
     for (auto _ : state)
     {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 

@@ -41,9 +41,7 @@ void CKKS_SPARSE_PACKING_BTKEYGEN(benchmark::State& state) {
     std::vector<uint32_t> bsgsDim = {0, 0};
     while (state.KeepRunning()) {
 
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -98,9 +96,7 @@ void CKKS_SPARSE_PACKING_ENCRYPT(benchmark::State& state) {
     std::vector<uint32_t> bsgsDim = {0, 0};
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -177,9 +173,7 @@ void CKKS_SPARSE_PACKING_DECRYPT(benchmark::State& state) {
     Ciphertext<DCRTPoly> ciph = cc->Encrypt(keyPair.publicKey, ptxt);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -237,9 +231,7 @@ void CKKS_SPARSE_PACKING_BOOTSTRAP(benchmark::State& state) {
     Ciphertext<DCRTPoly> ciph = cc->Encrypt(keyPair.publicKey, ptxt);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -294,9 +286,7 @@ void CKKS_SPARSE_PACKING_ADD(benchmark::State& state) {
     Ciphertext<DCRTPoly> c2 = cc->Encrypt(keyPair.publicKey, p2);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -351,9 +341,7 @@ void CKKS_SPARSE_PACKING_SUB(benchmark::State& state) {
     Ciphertext<DCRTPoly> c2 = cc->Encrypt(keyPair.publicKey, p2);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -408,9 +396,7 @@ void CKKS_SPARSE_PACKING_MUL(benchmark::State& state) {
     Ciphertext<DCRTPoly> c2 = cc->Encrypt(keyPair.publicKey, p2);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -462,9 +448,7 @@ void CKKS_SPARSE_PACKING_NEG(benchmark::State& state) {
     Ciphertext<DCRTPoly> c1 = cc->Encrypt(keyPair.publicKey, p1);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -516,9 +500,7 @@ void CKKS_SPARSE_PACKING_SQR(benchmark::State& state) {
     Ciphertext<DCRTPoly> c1 = cc->Encrypt(keyPair.publicKey, p1);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 
@@ -571,9 +553,7 @@ void CKKS_SPARSE_PACKING_ROT_1(benchmark::State& state) {
     Ciphertext<DCRTPoly> c1 = cc->Encrypt(keyPair.publicKey, p1);
 
     while (state.KeepRunning()) {
-        long freq = benchutils::get_cpu_freq();
-        double volt = benchutils::get_cpu_volt();
-        double power = benchutils::estimate_power(volt, freq, 1.0);
+        double power = benchutils::get_total_cpu_energy_j();
         power_sum+= power;
         cnt+=1;
 

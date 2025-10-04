@@ -160,9 +160,7 @@ void IterativeBootstrapExample() {
     // start time
     auto start = std::chrono::high_resolution_clock::now();
 
-    long freq = benchutils::get_cpu_freq();
-    double volt = benchutils::get_cpu_volt();
-    double power = benchutils::estimate_power(volt, freq, 1.0);
+    double power = benchutils::get_total_cpu_energy_j();
 
     // Step 5: Measure the precision of a single bootstrapping operation.
     auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);
@@ -192,9 +190,7 @@ void IterativeBootstrapExample() {
     // start time
     start = std::chrono::high_resolution_clock::now();
     
-    freq = benchutils::get_cpu_freq();
-    volt = benchutils::get_cpu_volt();
-    power = benchutils::estimate_power(volt, freq, 1.0);
+    power = benchutils::get_total_cpu_energy_j();
     // Step 6: Run bootstrapping with multiple iterations.
     auto ciphertextTwoIterations = cryptoContext->EvalBootstrap(ciph, numIterations, precision);
 
