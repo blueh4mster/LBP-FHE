@@ -30,6 +30,24 @@ void CKKS_FULL_PACKING_BTKEYGEN(benchmark::State &state)
 
     usint numSlots = parameters.GetRingDim() / 2;
     auto cc = GenCryptoContext(parameters);
+
+    auto params = cc->GetCryptoParameters();
+auto elemParams = params->GetElementParams();
+
+
+    std::cout << "Ring dimension n = "
+          << elemParams->GetRingDimension()
+          << std::endl;
+
+std::cout << "Ciphertext modulus Q (current level) = "
+          << elemParams->GetModulus()
+          << std::endl;
+
+std::cout << "Bit-length of Q = "
+          << elemParams->GetModulus().GetMSB()
+          << " bits"
+          << std::endl;
+          
     cc->Enable(PKE);
     cc->Enable(KEYSWITCH);
     cc->Enable(LEVELEDSHE);
