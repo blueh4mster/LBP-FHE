@@ -189,11 +189,31 @@ void CKKS_FULL_PACKING_BOOTSTRAP(benchmark::State &state)
     parameters.SetSecurityLevel(HEStd_NotSet);
 
     auto cc = GenCryptoContext(parameters);
+
+    auto params = cc->GetCryptoParameters();
+auto elemParams = params->GetElementParams();
+
+std::cout << "Ring dimension n = "
+          << elemParams->GetRingDimension()
+          << std::endl;
+
+std::cout << "Slot Count = "<<elemParams->GetRingDimension()/2<<std::endl;
+
+std::cout << "Ciphertext modulus Q (current level) = "
+          << elemParams->GetModulus()
+          << std::endl;
+
+std::cout << "Bit-length of Q = "
+          << elemParams->GetModulus().GetMSB()
+          << " bits"
+          << std::endl;
     cc->Enable(PKE);
     cc->Enable(KEYSWITCH);
     cc->Enable(LEVELEDSHE);
     cc->Enable(ADVANCEDSHE);
     cc->Enable(FHE);
+
+
 
     usint numSlots = parameters.GetRingDim() / 2;
     std::vector<double> x = {0.25, 0.5, 0.75, 1.0, 2.0, 3.0, 4.0, 5.0};
@@ -205,6 +225,9 @@ void CKKS_FULL_PACKING_BOOTSTRAP(benchmark::State &state)
     cc->EvalBootstrapKeyGen(keyPair.secretKey, numSlots);
 
     Plaintext ptxt = cc->MakeCKKSPackedPlaintext(x, 1, depth - 1);
+    std::cout << "Scaling factor: "
+          << ptxt->GetScalingFactor()
+          << std::endl;
     ptxt->SetLength(encodedLength);
     Ciphertext<DCRTPoly> ciph = cc->Encrypt(keyPair.publicKey, ptxt);
 

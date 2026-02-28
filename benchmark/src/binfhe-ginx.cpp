@@ -46,6 +46,13 @@ using namespace lbcrypto;
 BinFHEContext GenerateFHEWContext(BINFHE_PARAMSET set) {
     auto cc = BinFHEContext();
     cc.GenerateBinFHEContext(set, GINX);
+    std::cout<<"Plaintext modulus p = "<<2<<'\n';
+    std::cout<<"Slot Count = "<<1<<'\n';
+    auto params = cc.GetParams();
+
+    std::cout << "LWE ciphertext modulus q = "
+          << params->GetLWEParams()->GetQ()
+          << std::endl;
     return cc;
 }
 
